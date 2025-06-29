@@ -1,33 +1,23 @@
-🎬 Netflix EDA Dataset Visualization
-This project performs Exploratory Data Analysis (EDA) on the Netflix Movies and TV Shows Dataset using Flask, Matplotlib, and Seaborn. It visualizes various aspects of Netflix content like content type, country distribution, release trends, and popular genres through an interactive web dashboard.
+🎯 Customer Sales EDA Dataset Visualization  
+This project performs **Exploratory Data Analysis (EDA)** on a **Customer Sales Dataset** using **Flask**, **Matplotlib**, and **Seaborn**. It visualizes various aspects such as product categories, sales trends, regional performance, and top customers through an interactive web dashboard.
 
-📊 Features
-Content Type Distribution (Movies vs TV Shows)
+📊 Features  
+- Sales Distribution by Region  
+- Top 10 Customers by Revenue  
+- Monthly Sales Trends  
+- Product Category Distribution  
+- Interactive Dashboard using Flask and HTML templates  
 
-Top 10 Countries by Content Volume
+🛠️ Technologies Used  
+- Python 3  
+- Flask  
+- Matplotlib  
+- Seaborn  
+- Pandas  
+- HTML5  
+- CSS3  
+- Bootstrap 5  
 
-Year-wise Content Addition Trends
-
-Most Frequent Genres
-
-Interactive Dashboard using Flask and HTML templates
-
-🛠️ Technologies Used
-Python 3
-
-Flask
-
-Matplotlib
-
-Seaborn
-
-Pandas
-
-HTML5
-
-CSS3
-
-Bootstrap 5
 
 🚀 Getting Started
 
@@ -56,7 +46,7 @@ pip install flask pandas matplotlib seaborn
 python app.py
 
 ## 🚀 Live Demo  
-Check out the live deployed project here: [View Project on Render](https://celebal-task-4-1.onrender.com)
+Check out the live deployed project here: [View Project on Render](https://celebal-assignment-4.onrender.com)
 
 
 
