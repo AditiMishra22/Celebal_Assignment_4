@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Sales Data - Comprehensive EDA</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { 
+            color: #2c3e50; 
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        .viz-section { 
+            margin-bottom: 50px; 
+            text-align: center;
+        }
+        .viz-section img { 
+            max-width: 100%; 
+            height: auto;
+            border: 2px solid #ecf0f1; 
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stats-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .stats-table th, .stats-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .stats-table th {
+            background-color: #3498db;
+            color: white;
+        }
+        .stats-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .correlation-item {
+            background-color: #e8f4fd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .metric {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .positive-corr { border-left-color: #27ae60; }
+        .negative-corr { border-left-color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Customer Sales Data - Comprehensive EDA</h1>
+        
+        <!-- Dataset Overview -->
+        <h2>📊 Dataset Overview</h2>
+        <div class="stats-grid">
+            <div class="stats-card">
+                <h3>Basic Information</h3>
+                <p><span class="metric">Shape:</span> {{ info.shape[0] }} rows × {{ info.shape[1] }} columns</p>
+                <p><span class="metric">Numerical Variables:</span> {{ info.numeric_columns|length }}</p>
+                <p><span class="metric">Categorical Variables:</span> {{ info.categorical_columns|length }}</p>
+            </div>
+            <div class="stats-card">
+                <h3>Data Quality</h3>
+                <p><span class="metric">Missing Values:</span></p>
+                {% for col, missing in info.missing.items() %}
+                    {% if missing > 0 %}
+                        <p>{{ col }}: {{ missing }}</p>
+                    {% endif %}
+                {% endfor %}
+                {% if info.missing.values()|sum == 0 %}
+                    <p style="color: #27ae60;">✅ No missing values detected!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Statistical Summary -->
+        <h2>📈 Statistical Summary</h2>
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Mean</th>
+                    <th>Median</th>
+                    <th>Std Dev</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Skewness</th>
+                    <th>Kurtosis</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for var, stats in stats_summary.items() %}
+                <tr>
+                    <td><strong>{{ var.replace('_', ' ').title() }}</strong></td>
+                    <td>{{ stats.mean }}</td>
+                    <td>{{ stats.median }}</td>
+                    <td>{{ stats.std }}</td>
+                    <td>{{ stats.min }}</td>
+                    <td>{{ stats.max }}</td>
+                    <td>{{ stats.skewness }}</td>
+                    <td>{{ stats.kurtosis }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Correlation Insights -->
+        <h2>🔗 Key Correlations</h2>
+        <div style="margin: 20px 0;">
+            {% for corr in high_correlations %}
+                <div class="correlation-item {% if corr.correlation > 0 %}positive-corr{% else %}negative-corr{% endif %}">
+                    <strong>{{ corr.var1.replace('_', ' ').title() }}</strong> ↔ 
+                    <strong>{{ corr.var2.replace('_', ' ').title() }}</strong>: 
+                    <span class="metric">{{ corr.correlation }}</span>
+                    {% if corr.correlation > 0.5 %}
+                        (Strong Positive)
+                    {% elif corr.correlation > 0.3 %}
+                        (Moderate Positive)
+                    {% elif corr.correlation < -0.5 %}
+                        (Strong Negative)
+                    {% else %}
+                        (Moderate Negative)
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Categorical Summary -->
+        <h2>📂 Categorical Variables Summary</h2>
+        <div class="stats-grid">
+            {% for var, summary in categorical_summary.items() %}
+            <div class="stats-card">
+                <h3>{{ var.replace('_', ' ').title() }}</h3>
+                <p><span class="metric">Unique Values:</span> {{ summary.unique_count }}</p>
+                <p><span class="metric">Top Categories:</span></p>
+                {% for category, count in summary.top_categories.items() %}
+                    <p>• {{ category }}: {{ count }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Visualizations -->
+        <h2>📊 Comprehensive Visualizations</h2>
+        
+        <div class="viz-section">
+            <h3>1. Correlation Heatmap</h3>
+            <p>Shows relationships between all numerical variables in the dataset</p>
+            <img src="/static/correlation_heatmap.png" alt="Correlation Heatmap">
+        </div>
+
+        <div class="viz-section">
+            <h3>2. Distribution Analysis</h3>
+            <p>Histograms with KDE curves showing the distribution of key numerical variables</p>
+            <img src="/static/distributions.png" alt="Distribution Analysis">
+        </div>
+
+        <div class="viz-section">
+            <h3>3. Outlier Detection</h3>
+            <p>Box plots for identifying outliers in numerical variables</p>
+            <img src="/static/boxplots.png" alt="Outlier Detection">
+        </div>
+
+        <div class="viz-section">
+            <h3>4. Categorical Variable Analysis</h3>
+            <p>Analysis of categorical variables including distributions and relationships</p>
+            <img src="/static/categorical_analysis.png" alt="Categorical Analysis">
+        </div>
+
+        <div class="viz-section">
+            <h3>5. Relationship Analysis</h3>
+            <p>Scatter plots with regression lines showing key variable relationships</p>
+            <img src="/static/relationship_analysis.png" alt="Relationship Analysis">
+        </div>
+
+        <div class="viz-section">
+            <h3>6. Statistical Summary Visualizations</h3>
+            <p>Advanced statistical visualizations showing distributions by categories</p>
+            <img src="/static/statistical_summary.png" alt="Statistical Summary">
+        </div>
+
+        <div class="viz-section">
+            <h3>7. Pairwise Relationships</h3>
+            <p>Comprehensive pairplot showing relationships between all numerical variables</p>
+            <img src="/static/pairplot.png" alt="Pairwise Relationships">
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+            <h3>📋 Dataset Summary</h3>
+            <p>This comprehensive EDA analysis covers <strong>{{ info.shape[0] }}</strong> customer records with <strong>{{ info.shape[1] }}</strong> features, providing insights into customer demographics, spending patterns, and satisfaction levels.</p>
+        </div>
+    </div>
+</body>
+</html>
